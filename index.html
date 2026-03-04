@@ -128,5 +128,25 @@ window.addEventListener('keydown',e=>{
 newPiece();
 requestAnimationFrame(update);
 </script>
+<div id="controls" style="display:flex;justify-content:center;margin-top:10px;">
+  <button id="btn-left">←</button>
+  <button id="btn-down">↓</button>
+  <button id="btn-right">→</button>
+  <button id="btn-rotate">↑</button>
+</div>
+<script>
+const btnLeft=document.getElementById('btn-left');
+const btnRight=document.getElementById('btn-right');
+const btnDown=document.getElementById('btn-down');
+const btnRotate=document.getElementById('btn-rotate');
+
+btnLeft.addEventListener('click',()=>{ if(!collides(-1,0)) piece.x--; });
+btnRight.addEventListener('click',()=>{ if(!collides(1,0)) piece.x++; });
+btnDown.addEventListener('click',()=>{ if(!collides(0,1)) piece.y++; });
+btnRotate.addEventListener('click',()=>{ const rotated=piece.shape[0].map((_,i)=>piece.shape.map(row=>row[i]).reverse()); if(!collides(0,0,rotated)) piece.shape=rotated; });
+
+const isTouch='ontouchstart' in window || navigator.maxTouchPoints>0;
+document.getElementById('controls').style.display=isTouch?'flex':'none';
+</script>
 </body>
 </html>
