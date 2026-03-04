@@ -119,7 +119,7 @@ function update(time){
 window.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft'&& !collides(-1,0)) piece.x--;
   if(e.key==='ArrowRight'&& !collides(1,0)) piece.x++;
-  if(e.key==='ArrowDown'&& !collides(0,1)) piece.y++; if(e.code==='Space' && !collides(0,1)){piece.y++;}
+  if(e.key==='ArrowDown'&& !collides(0,1)) piece.y++; if(e.code==='Space'){ while(!collides(0,1)) piece.y++; merge(); clearLines(); newPiece(); }
   if(e.key==='ArrowUp'){
     const rotated=piece.shape[0].map((_,i)=>piece.shape.map(row=>row[i]).reverse());
     if(!collides(0,0,rotated)) piece.shape=rotated;
