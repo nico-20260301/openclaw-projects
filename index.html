@@ -8,11 +8,19 @@
   </style>
 </head>
 <body>
-<canvas id="tetris" style="display:block;margin:auto;width:100%;height:auto;"></canvas>
+<canvas id="tetris" style="display:block;margin:auto;width:100%;height:calc(100vh - 20px);"></canvas>
 <script>
 const canvas = document.getElementById('tetris');
 const ctx = canvas.getContext('2d');
-const ROWS = 20, COLS = 10, BLOCK = 20;
+const BLOCK = 20;
+function resize(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+const ROWS = Math.floor(canvas.height / BLOCK);
+const COLS = Math.floor(canvas.width / BLOCK);
 const COLORS = ['cyan','blue','orange','yellow','green','purple','red'];
 const SHAPES = [
   [[1,1,1,1]],
