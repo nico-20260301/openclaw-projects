@@ -16,11 +16,13 @@ container.appendChild(joystick);
 
 let startX, startY;
 joystick.addEventListener('touchstart', e => {
+  e.preventDefault();
   const t = e.touches[0];
   startX = t.clientX;
   startY = t.clientY;
 });
 joystick.addEventListener('touchmove', e => {
+  e.preventDefault();
   const t = e.touches[0];
   const dx = t.clientX - startX;
   const dy = t.clientY - startY;
