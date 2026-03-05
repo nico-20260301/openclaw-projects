@@ -27,13 +27,18 @@ joystick.addEventListener('touchmove', e => {
   const dx = t.clientX - startX;
   const dy = t.clientY - startY;
   if (Math.abs(dx) > Math.abs(dy)) {
-    // 左右
+    // 左右移動
     if (dx < -30 && !collides(-1, 0)) piece.x--;
     if (dx > 30 && !collides(1, 0)) piece.x++;
   } else {
-    // 上下
-    if (dy < -30 && !collides(0, -1)) piece.y--;
-    if (dy > 30 && !collides(0, 1)) piece.y++;
+    // 上は回転、下はハードドロップ
+    if (dy < -30) {
+      const rotated = piece.shape[0].map((_, i) => piece.shape.map(r => r[i]).reverse());
+      if (!collides(0, 0, rotated)) piece.shape = rotated;
+    } else if (dy > 30) {
+      while (!collides(0, 1)) piece.y++;
+      merge(); clearLines(); newPiece();
+    }
   }
 });
 
