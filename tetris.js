@@ -9,6 +9,10 @@ function resize(){
 }
 resize();
 window.addEventListener('resize', resize);
+// ピンチ・ダブルクリック抑止
+window.addEventListener('touchmove', e => { e.preventDefault(); }, { passive: false });
+window.addEventListener('wheel', e => { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
+canvas.addEventListener('dblclick', e => { e.preventDefault(); });
 
 // ゲームパラメータ
 const ROWS = Math.floor(canvas.height / BLOCK);
