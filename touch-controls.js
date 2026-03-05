@@ -1,32 +1,53 @@
-// ボタン生成（既存のボタンを削除）
+// タッチコントロール（ジョイスティック＋回転）
 const container = document.createElement('div');
 container.id = 'touch-controls';
 document.body.appendChild(container);
 
-['←','↓','→','↑','⇩'].forEach((label, i) => {
-  const id = ['left','down','right','rotate','hard-drop'][i];
-  const btn = document.createElement('button');
-  btn.id = `btn-${id}`;
-  btn.textContent = label;
-  container.appendChild(btn);
+// 回転ボタン（右矢印）
+const btnRotate = document.createElement('button');
+btnRotate.id = 'btn-rotate';
+btnRotate.textContent = '→';
+container.appendChild(btnRotate);
+
+// ジョイスティックパッド（上下左右）
+const joystick = document.createElement('div');
+joystick.id = 'joystick';
+container.appendChild(joystick);
+
+let startX, startY;
+joystick.addEventListener('touchstart', e => {
+  const t = e.touches[0];
+  startX = t.clientX;
+  startY = t.clientY;
+});
+joystick.addEventListener('touchmove', e => {
+  const t = e.touches[0];
+  const dx = t.clientX - startX;
+  const dy = t.clientY - startY;
+  if (Math.abs(dx) > Math.abs(dy)) {
+    // 左右
+    if (dx < -30 && !collides(-1, 0)) piece.x--;
+    if (dx > 30 && !collides(1, 0)) piece.x++;
+  } else {
+    // 上下
+    if (dy < -30 && !collides(0, -1)) piece.y--;
+    if (dy > 30 && !collides(0, 1)) piece.y++;
+  }
 });
 
-const btnLeft   = document.getElementById('btn-left');
-const btnRight  = document.getElementById('btn-right');
-const btnDown   = document.getElementById('btn-down');
-const btnRotate = document.getElementById('btn-rotate');
-const btnHardDrop = document.getElementById('btn-hard-drop');
-
-btnLeft.addEventListener('click',   () => { if(!collides(-1,0)) piece.x--; });
-btnRight.addEventListener('click',  () => { if(!collides(1,0)) piece.x++; });
-btnDown.addEventListener('click',   () => { if(!collides(0,1)) piece.y++; });
 btnRotate.addEventListener('click', () => {
-  const rotated = piece.shape[0].map((_,i)=>piece.shape.map(row=>row[i]).reverse());
-  if(!collides(0,0,rotated)) piece.shape = rotated;
+  const rotated = piece.shape[0].map((_, i) => piece.shape.map(row => row[i]).reverse());
+  if (!collides(0, 0, rotated)) piece.shape = rotated;
 });
-btnHardDrop.addEventListener('click', () => {
-  while(!collides(0,1)) piece.y++;
-  merge(); clearLines(); newPiece();
+
+// ダブルクリックでハードドロップ（canvas へのイベント）
+document.addEventListener('dblclick', e => {
+  if (e.target.tagName.toLowerCase() === 'canvas') {
+    while (!collides(0, 1)) piece.y++;
+    merge();
+    clearLines();
+    newPiece();
+  }
 });
 
 const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
