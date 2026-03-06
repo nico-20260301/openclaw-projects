@@ -13,45 +13,61 @@ document.body.appendChild(container);
 // 画面タップで左右移動（スワイプ時は無視）
 let touchStartX = null;
 let touchStartY = null;
-canvas.addEventListener('touchstart', e => {
-  e.preventDefault();
-  const t = e.touches[0];
-  touchStartX = t.clientX;
-  touchStartY = t.clientY;
+// Pointerup handler for both horizontal move and swipe
+let swipeStartY = null;
+canvas.addEventListener('pointerdown', e => {
+  swipeStartY = e.clientY;
 });
-canvas.addEventListener('touchend', e => {
-  if (touchStartX === null || touchStartY === null) return;
-  const endX = e.changedTouches[0].clientX;
-  const endY = e.changedTouches[0].clientY;
-  const diffY = endY - touchStartY;
-  const diffX = endX - touchStartX;
-  const swipeThreshold = 50;
+canvas.addEventListener('pointerup', e => {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const width = rect.width;
+  // Horizontal move based on tap position
+  if (x < width / 2) {
+    if (!collides(-1, 0)) piece.x--;
+  } else {
+    if (!collides(1, 0)) piece.x++;
+  }
+  // Swipe detection
+  if (swipeStartY !== null) {
+    const diffY = e.clientY - swipeStartY;
+    const swipeThreshold = 50;
+    if (Math.abs(diffY) > swipeThreshold) {
+      if (diffY > 0) {
+        while (!collides(0, 1)) piece.y++;
+        merge();
+        clearLines();
+        newPiece();
+      } else {
+        const rotated = piece.shape[0].map((_, i) => piece.shape.map(row => row[i]).reverse());
+        if (!collides(0, 0, rotated)) piece.shape = rotated;
+      }
+    }
+  }
+  swipeStartY = null;
+});
 
+// スワイプ検出（上: 回転, 下: ハードドロップ）
+let swipeStartY = null;
+canvas.addEventListener('pointerdown', e => {
+  swipeStartY = e.clientY;
+});
+canvas.addEventListener('pointerup', e => {
+  if (swipeStartY === null) return;
+  const diffY = e.clientY - swipeStartY;
+  const swipeThreshold = 50;
   if (Math.abs(diffY) > swipeThreshold) {
-    // スワイプ検出（上: 回転, 下: ハードドロップ）
     if (diffY > 0) {
-      // 下スワイプ: ハードドロップ
       while (!collides(0, 1)) piece.y++;
       merge();
       clearLines();
       newPiece();
     } else {
-      // 上スワイプ: 回転
       const rotated = piece.shape[0].map((_, i) => piece.shape.map(row => row[i]).reverse());
       if (!collides(0, 0, rotated)) piece.shape = rotated;
     }
-  } else {
-    // 水平移動（スワイプでない場合）
-    if (Math.abs(diffX) > 10 && Math.abs(diffY) < 10) {
-      if (diffX < 0) {
-        if (!collides(-1, 0)) piece.x--;
-      } else {
-        if (!collides(1, 0)) piece.x++;
-      }
-    }
   }
-  touchStartX = null;
-  touchStartY = null;
+  swipeStartY = null;
 });
 
 const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
