@@ -42,7 +42,7 @@ canvas.addEventListener('touchend', e => {
     }
   } else {
     // 水平移動（スワイプでない場合）
-    if (Math.abs(diffX) > 10) {
+    if (Math.abs(diffX) > 10 && Math.abs(diffY) < 10) {
       if (diffX < 0) {
         if (!collides(-1, 0)) piece.x--;
       } else {
