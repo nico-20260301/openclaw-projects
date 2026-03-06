@@ -3,12 +3,6 @@ const container = document.createElement('div');
 container.id = 'touch-controls';
 document.body.appendChild(container);
 
-// 回転ボタン（右下に配置）
-const btnRotate = document.createElement('button');
-btnRotate.id = 'btn-rotate';
-btnRotate.textContent = '→';
-container.appendChild(btnRotate);
-
 // 画面タップで左右移動
 canvas.addEventListener('touchstart', e => {
   e.preventDefault();
@@ -23,17 +17,29 @@ canvas.addEventListener('touchstart', e => {
   }
 });
 
-btnRotate.addEventListener('click', () => {
-  const rotated = piece.shape[0].map((_, i) => piece.shape.map(row => row[i]).reverse());
-  if (!collides(0, 0, rotated)) piece.shape = rotated;
+// スワイプ検出（上: 回転, 下: ハードドロップ）
+let swipeStartY = null;
+canvas.addEventListener('touchstart', e => {
+  swipeStartY = e.touches[0].clientY;
 });
-
-// ダブルクリックでハードドロップ（canvas へのイベント）
-canvas.addEventListener('dblclick', e => {
-  while (!collides(0, 1)) piece.y++;
-  merge();
-  clearLines();
-  newPiece();
+canvas.addEventListener('touchend', e => {
+  if (swipeStartY === null) return;
+  const endY = e.changedTouches[0].clientY;
+  const diff = endY - swipeStartY;
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) {
+      // 下スワイプ: ハードドロップ
+      while (!collides(0, 1)) piece.y++;
+      merge();
+      clearLines();
+      newPiece();
+    } else {
+      // 上スワイプ: 回転
+      const rotated = piece.shape[0].map((_, i) => piece.shape.map(row => row[i]).reverse());
+      if (!collides(0, 0, rotated)) piece.shape = rotated;
+    }
+  }
+  swipeStartY = null;
 });
 
 const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
