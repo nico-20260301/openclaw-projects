@@ -1,4 +1,11 @@
 // タッチコントロール（回転ボタンのみ）
+// グローバルオブジェクトに必要な関数/変数を公開
+window.collides = collides;
+window.merge = merge;
+window.newPiece = newPiece;
+window.clearLines = clearLines;
+window.piece = piece;
+
 const container = document.createElement('div');
 container.id = 'touch-controls';
 document.body.appendChild(container);
