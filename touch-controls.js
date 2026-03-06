@@ -3,31 +3,26 @@ const container = document.createElement('div');
 container.id = 'touch-controls';
 document.body.appendChild(container);
 
-// 画面タップで左右移動
+// 画面タップで左右移動（スワイプ時は無視）
+let touchStartX = null;
+let touchStartY = null;
 canvas.addEventListener('touchstart', e => {
   e.preventDefault();
   const t = e.touches[0];
-  const rect = canvas.getBoundingClientRect();
-  const x = t.clientX - rect.left;
-  const width = rect.width;
-  if (x < width / 2) {
-    if (!collides(-1, 0)) piece.x--;
-  } else {
-    if (!collides(1, 0)) piece.x++;
-  }
-});
-
-// スワイプ検出（上: 回転, 下: ハードドロップ）
-let swipeStartY = null;
-canvas.addEventListener('touchstart', e => {
-  swipeStartY = e.touches[0].clientY;
+  touchStartX = t.clientX;
+  touchStartY = t.clientY;
 });
 canvas.addEventListener('touchend', e => {
-  if (swipeStartY === null) return;
+  if (touchStartX === null || touchStartY === null) return;
+  const endX = e.changedTouches[0].clientX;
   const endY = e.changedTouches[0].clientY;
-  const diff = endY - swipeStartY;
-  if (Math.abs(diff) > 50) {
-    if (diff > 0) {
+  const diffY = endY - touchStartY;
+  const diffX = endX - touchStartX;
+  const swipeThreshold = 50;
+
+  if (Math.abs(diffY) > swipeThreshold) {
+    // スワイプ検出（上: 回転, 下: ハードドロップ）
+    if (diffY > 0) {
       // 下スワイプ: ハードドロップ
       while (!collides(0, 1)) piece.y++;
       merge();
@@ -38,8 +33,18 @@ canvas.addEventListener('touchend', e => {
       const rotated = piece.shape[0].map((_, i) => piece.shape.map(row => row[i]).reverse());
       if (!collides(0, 0, rotated)) piece.shape = rotated;
     }
+  } else {
+    // 水平移動（スワイプでない場合）
+    if (Math.abs(diffX) > 10) {
+      if (diffX < 0) {
+        if (!collides(-1, 0)) piece.x--;
+      } else {
+        if (!collides(1, 0)) piece.x++;
+      }
+    }
   }
-  swipeStartY = null;
+  touchStartX = null;
+  touchStartY = null;
 });
 
 const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
