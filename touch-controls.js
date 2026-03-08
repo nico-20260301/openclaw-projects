@@ -47,28 +47,7 @@ canvas.addEventListener('pointerup', e => {
   swipeStartY = null;
 });
 
-// スワイプ検出（上: 回転, 下: ハードドロップ）
-let swipeStartY = null;
-canvas.addEventListener('pointerdown', e => {
-  swipeStartY = e.clientY;
-});
-canvas.addEventListener('pointerup', e => {
-  if (swipeStartY === null) return;
-  const diffY = e.clientY - swipeStartY;
-  const swipeThreshold = 50;
-  if (Math.abs(diffY) > swipeThreshold) {
-    if (diffY > 0) {
-      while (!collides(0, 1)) piece.y++;
-      merge();
-      clearLines();
-      newPiece();
-    } else {
-      const rotated = piece.shape[0].map((_, i) => piece.shape.map(row => row[i]).reverse());
-      if (!collides(0, 0, rotated)) piece.shape = rotated;
-    }
-  }
-  swipeStartY = null;
-});
+
 
 const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 container.style.display = isTouch ? 'flex' : 'none';
