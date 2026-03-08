@@ -38,6 +38,9 @@ canvas.addEventListener('pointerup', e => {
         merge();
         clearLines();
         newPiece();
+        // Skip horizontal move on hard drop
+        swipeStartY = null;
+        return;
       } else {
         const rotated = piece.shape[0].map((_, i) => piece.shape.map(row => row[i]).reverse());
         if (!collides(0, 0, rotated)) piece.shape = rotated;
