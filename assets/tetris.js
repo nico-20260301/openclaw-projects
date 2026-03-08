@@ -67,7 +67,8 @@ function getGhostPosition(){
 // 予測ブロック描画
 function drawGhost(){
   const ghostY = getGhostPosition();
-  ctx.globalAlpha = 0.3;
+  ctx.globalAlpha = 0.4;
+  ctx.setLineDash([5,5]);
   piece.shape.forEach((row,dy)=>{
     row.forEach((cell,dx)=>{
       if(cell){
@@ -75,11 +76,12 @@ function drawGhost(){
         const y=ghostY+dy;
         ctx.fillStyle=piece.color;
         ctx.fillRect(x*BLOCK,y*BLOCK,BLOCK,BLOCK);
-        ctx.strokeStyle='#111';
+        ctx.strokeStyle=piece.color;
         ctx.strokeRect(x*BLOCK,y*BLOCK,BLOCK,BLOCK);
       }
     });
   });
+  ctx.setLineDash([]);
   ctx.globalAlpha = 1.0;
 }
 
