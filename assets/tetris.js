@@ -56,6 +56,33 @@ function collides(offsetX=0, offsetY=0, shape=piece.shape){
   }
   return false;
 }
+
+// 予測位置を返す関数
+function getGhostPosition(){
+  let ghostY = piece.y;
+  while(!collides(0,ghostY+1)) ghostY++;
+  return ghostY;
+}
+
+// 予測ブロック描画
+function drawGhost(){
+  const ghostY = getGhostPosition();
+  ctx.globalAlpha = 0.3;
+  piece.shape.forEach((row,dy)=>{
+    row.forEach((cell,dx)=>{
+      if(cell){
+        const x=piece.x+dx;
+        const y=ghostY+dy;
+        ctx.fillStyle=piece.color;
+        ctx.fillRect(x*BLOCK,y*BLOCK,BLOCK,BLOCK);
+        ctx.strokeStyle='#111';
+        ctx.strokeRect(x*BLOCK,y*BLOCK,BLOCK,BLOCK);
+      }
+    });
+  });
+  ctx.globalAlpha = 1.0;
+}
+
 function merge(){
   piece.shape.forEach((row,dy)=>{
     row.forEach((cell,dx)=>{
@@ -80,6 +107,8 @@ function draw(){
   board.forEach((row,y)=>{
     row.forEach((color,x)=>{if(color){ctx.fillStyle=color;ctx.fillRect(x*BLOCK,y*BLOCK,BLOCK,BLOCK);ctx.strokeStyle='#111';ctx.strokeRect(x*BLOCK,y*BLOCK,BLOCK,BLOCK);}});
   });
+  // Draw ghost piece
+  drawGhost();
   piece.shape.forEach((row,dy)=>{
     row.forEach((cell,dx)=>{if(cell){const x=piece.x+dx;const y=piece.y+dy;ctx.fillStyle=piece.color;ctx.fillRect(x*BLOCK,y*BLOCK,BLOCK,BLOCK);ctx.strokeStyle='#111';ctx.strokeRect(x*BLOCK,y*BLOCK,BLOCK,BLOCK);}});
   });
