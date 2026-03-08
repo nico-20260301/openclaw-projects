@@ -57,18 +57,31 @@ function collides(offsetX=0, offsetY=0, shape=piece.shape){
   return false;
 }
 
-// 予測位置を返す関数
-function getGhostPosition(){
-  let ghostY = piece.y;
-  while(!collides(0,ghostY+1)) ghostY++;
-  return ghostY;
+// 予測位置を返す関数（変更版）
+function getGhostY(){
+  let gY = piece.y;
+  while (true) {
+    let collision = false;
+    for (let y = 0; y < piece.shape.length; y++) {
+      for (let x = 0; x < piece.shape[y].length; x++) {
+        if (!piece.shape[y][x]) continue;
+        const newY = gY + y + 1;
+        const newX = piece.x + x;
+        if (newY >= ROWS || board[newY][newX]) {
+          collision = true;
+        }
+      }
+    }
+    if (collision) break;
+    gY++;
+  }
+  return gY;
 }
 
 // 予測ブロック描画
 // 予測ブロック描画
 function drawGhost(){
-  const ghostYRaw = getGhostPosition();
-  const ghostY = Math.max(0, ghostYRaw); // 防止負値
+  const ghostY = Math.max(0, getGhostY());
   ctx.globalAlpha = 0.4;
   ctx.setLineDash([5,5]);
   piece.shape.forEach((row,dy)=>{
