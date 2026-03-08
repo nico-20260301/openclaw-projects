@@ -104,9 +104,9 @@ function merge(){
   piece.shape.forEach((row,dy)=>{
     row.forEach((cell,dx)=>{
       if(cell){
-        const y=piece.y+dy;
-        const x=piece.x+dx;
-        if(y>=0) board[y][x]=piece.color;
+        const y = piece.y + dy;
+        const x = piece.x + dx;
+        if (y >= 0 && y < ROWS) board[y][x] = piece.color;
       }
     });
   });
