@@ -65,19 +65,21 @@ function getGhostPosition(){
 }
 
 // 予測ブロック描画
+// 予測ブロック描画
 function drawGhost(){
-  const ghostY = getGhostPosition();
+  const ghostYRaw = getGhostPosition();
+  const ghostY = Math.max(0, ghostYRaw); // 防止負値
   ctx.globalAlpha = 0.4;
   ctx.setLineDash([5,5]);
   piece.shape.forEach((row,dy)=>{
     row.forEach((cell,dx)=>{
       if(cell){
-        const x=piece.x+dx;
-        const y=ghostY+dy;
-        ctx.fillStyle=piece.color;
-        ctx.fillRect(x*BLOCK,y*BLOCK,BLOCK,BLOCK);
-        ctx.strokeStyle=piece.color;
-        ctx.strokeRect(x*BLOCK,y*BLOCK,BLOCK,BLOCK);
+        const x = piece.x + dx;
+        const y = ghostY + dy;
+        ctx.fillStyle = piece.color;
+        ctx.fillRect(x*BLOCK, y*BLOCK, BLOCK, BLOCK);
+        ctx.strokeStyle = piece.color;
+        ctx.strokeRect(x*BLOCK, y*BLOCK, BLOCK, BLOCK);
       }
     });
   });
