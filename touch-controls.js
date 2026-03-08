@@ -22,30 +22,31 @@ canvas.addEventListener('pointerup', e => {
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const width = rect.width;
-  // Horizontal move based on tap position
-  if (x < width / 2) {
-    if (!collides(-1, 0)) piece.x--;
-  } else {
-    if (!collides(1, 0)) piece.x++;
-  }
-  // Swipe detection
+  // Swipe detection first
   if (swipeStartY !== null) {
     const diffY = e.clientY - swipeStartY;
     const swipeThreshold = 50;
     if (Math.abs(diffY) > swipeThreshold) {
       if (diffY > 0) {
+        // ハードドロップ（下へ全て落とす）
         while (!collides(0, 1)) piece.y++;
         merge();
         clearLines();
         newPiece();
-        // Skip horizontal move on hard drop
-        swipeStartY = null;
-        return;
       } else {
+        // 回転
         const rotated = piece.shape[0].map((_, i) => piece.shape.map(row => row[i]).reverse());
         if (!collides(0, 0, rotated)) piece.shape = rotated;
       }
+      swipeStartY = null; // reset
+      return; // skip horizontal move during swipe
     }
+  }
+  // Not a swipe; horizontal move based on tap position
+  if (x < width / 2) {
+    if (!collides(-1, 0)) piece.x--;
+  } else {
+    if (!collides(1, 0)) piece.x++;
   }
   swipeStartY = null;
 });
